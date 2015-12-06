@@ -5,7 +5,12 @@
 
 
 int set_init(Set **self){
-
+    Set *temp;
+    temp=(Set *)malloc(sizeof(Set));
+    if(temp==NULL)
+        return 1;
+    *self=temp;
+    base_init((temp->_base),NULL);
 }
 
 int set_del(Set **self, int (*data_del)(void *data)){
@@ -13,17 +18,29 @@ int set_del(Set **self, int (*data_del)(void *data)){
 }
 
 int set_search(Set *self, void *data, void **result_data, int *result_found, int (*compar)(const void *, const void *)){
-
+    int flag;
+    flag=base_search(self->_base,data,result_data,result_found,compar);
+    return flag;
 }
 
 int set_insert(Set **self, void *data, int (*compar)(const void *, const void *)){
+    int flag;
+    flag=base_insert((*self)->_base,data,compar);
+    return flag;
 
 }
 int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)){
-
+    int *result;
+    base_delete((*self)->_base,data,result,compar);
+    return *result;
 }
 
 int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*compar)(const void *, const void *)){
+    Set *temp;
+    temp=(Set *)malloc(sizeof(Set));
+    if(temp==NULL)
+        return 1;
+
 
 }
 
