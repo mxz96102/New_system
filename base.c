@@ -83,4 +83,6 @@ int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void 
 
 int base_map(Base *self, void *pipe, int (*callback)(const void *data, void *pipe)) {
 
+    return 0;
 }
+
