@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "sns_functions.h"
 #include "set_functions.h"
 
@@ -58,8 +59,18 @@ int sns_map_people(Sns *self, void *pipe, int (*callback)(const void *data, void
 
 // people
 int people_init(Sns *universal, People **self, char name[100], int id, int id_given){
-
-
+    Set *temp;
+    People *new_man;
+    new_man = (People *) malloc(sizeof(People));
+    if (new_man == NULL)
+        return 1;
+    set_init(&new_man->_followings);
+    set_init(&new_man->_friends);
+    set_init(&new_man->_followers);
+    set_init(&new_man->__incoming_friends);
+    strcpy(new_man->name, name);
+    new_man->id = id;
+    return 0;
 }
 int people_del(Sns *universal, People **self){
 
@@ -105,15 +116,18 @@ int people_unfriend(People *self, People *target){
 }
 
 int people_followings(People *self, Circle **followings){
-
+    (*followings)->_peoples = self->_followings;
+    return 0;
 }
 
 int people_followers(People *self, Circle **followers){
-
+    (*followers)->_peoples = self->_followers;
+    return 0;
 }
 
 int people_friends(People *self, Circle **friends){
-
+    (*friends)->_peoples = self->_followings;
+    return 0;
 }
 
 int people_common_followings(People *self, People *target, Circle **common_followings){
