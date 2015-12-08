@@ -10,7 +10,8 @@ int set_init(Set **self){
     if(temp==NULL)
         return 1;
     *self=temp;
-    base_init((temp->_base),NULL);
+    base_init(&(temp->_base), NULL);
+    return 0;
 }
 
 int set_del(Set **self, int (*data_del)(void *data)){
@@ -25,14 +26,13 @@ int set_search(Set *self, void *data, void **result_data, int *result_found, int
 
 int set_insert(Set **self, void *data, int (*compar)(const void *, const void *)){
     int flag;
-    flag=base_insert((*self)->_base,data,compar);
+    flag = base_insert(&(*self)->_base, data, compar);
     return flag;
-
 }
 int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)){
-    int *result;
-    base_delete((*self)->_base,data,result,compar);
-    return *result;
+    int result;
+    base_delete(&(*self)->_base, data, &result, compar);
+    return result;
 }
 
 int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*compar)(const void *, const void *)){
