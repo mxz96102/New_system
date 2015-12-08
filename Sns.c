@@ -69,16 +69,39 @@ int people_patch(People *self, char name[100], int id){
 
 }
 int people_follow(People *self, People *target){
-
+    int flag[2];
+    flag[2] = set_insert(&(self->_followings), target, id_cmp);
+    flag[1] = set_insert(&(target->_followers), self, id_cmp);
+    if (flag[1] || flag[2])
+        return 1;
+    else
+        return 0;
 }
 int people_unfollow(People *self, People *target){
-
+    int flag[2];
+    flag[2] = set_delete(&(self->_followings), target, id_cmp);
+    flag[1] = set_delete(&(target->_followers), self, id_cmp);
+    if (flag[1] || flag[2])
+        return 1;
+    else
+        return 0;
 }
 int people_friend(People *self, People *target){
+    int flag;
+    flag = set_insert(&(self->_friends), target, id_cmp);
+    if (flag)
+        return 1;
+    else
+        return 0;
 
 }
 int people_unfriend(People *self, People *target){
-
+    int flag;
+    flag = set_delete(&(self->_friends), target, id_cmp);
+    if (flag)
+        return 1;
+    else
+        return 0;
 }
 
 int people_followings(People *self, Circle **followings){
