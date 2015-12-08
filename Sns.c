@@ -16,7 +16,14 @@ int sns_json_file_write(Sns *self, char *filename){
 
 int sns_init(Sns **self){
     Sns *temp;
-
+    Set *people;
+    temp = (Sns *) malloc(sizeof(Sns));
+    if (temp == NULL)
+        return 1;
+    set_init(&people);
+    temp->_peoples = people;
+    *self = temp;
+    return 0;
 }
 
 int sns_del(Sns **self){
@@ -24,12 +31,22 @@ int sns_del(Sns **self){
 }
 
 int sns_search_people(Sns *self, int id, People **result_people){
-    People *data,*result,*result2;
-    set_search(self,data,result,result2,id_cmp);
+    People *data, *result;
+    int respond;
+    people_init(self, &data, NULL, id, id);
+    set_search(self->_peoples, data, &result, &respond, id_cmp);
+    return 0;
 
 }
 int sns_insert_people(Sns *self, People *people, int id_given){
-
+    int8_t flag;
+    if (id_given <= self->peoples_id_max)
+        return 2;
+    flag = set_insert(&(self->_peoples), people, id_cmp);
+    if (flag)
+        return 1;
+    else
+        return 0;
 }
 int sns_delete_people(Sns *self, People *people){
 
@@ -42,9 +59,9 @@ int sns_map_people(Sns *self, void *pipe, int (*callback)(const void *data, void
 // people
 int people_init(Sns *universal, People **self, char name[100], int id, int id_given){
 
+
 }
 int people_del(Sns *universal, People **self){
-
 
 }
 
