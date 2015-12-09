@@ -49,7 +49,7 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
 
     while(p1->next!=NULL) {
         p1 = p1->next;
-        if (compar(p1->data, data) == 0)
+        if ((*compar)(p1->data, data) == 0)
             return 2;
     }
 
@@ -60,7 +60,7 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
 int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void *, const void *)) {
     Base *p1,*p2;
     p1=*self;
-    while (compar(p1->data,data)!=0&&p1!=NULL){
+    while ((*compar)(p1->data, data) != 0 && p1 != NULL) {
         p1=p1->next;
     }
 
@@ -82,7 +82,13 @@ int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void 
 }
 
 int base_map(Base *self, void *pipe, int (*callback)(const void *data, void *pipe)) {
-
+    Base *p1;
+    p1 = self->next;
+    while (p1 != NULL) {
+        if ((*callback)(p1->data, pipe))
+            return 1;
+        p1 = p1->next;
+    }
     return 0;
 }
 

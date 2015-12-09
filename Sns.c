@@ -50,11 +50,15 @@ int sns_insert_people(Sns *self, People *people, int id_given){
         return 0;
 }
 int sns_delete_people(Sns *self, People *people){
-
+    int flag;
+    flag = set_delete(&self->_peoples, people, id_cmp);
+    return flag;
 }
 
 int sns_map_people(Sns *self, void *pipe, int (*callback)(const void *data, void *pipe)){
-
+    int flag = 1;
+    flag = set_map(self->_peoples, pipe, *callback);
+    return flag;
 }
 
 // people
@@ -74,6 +78,7 @@ int people_init(Sns *universal, People **self, char name[100], int id, int id_gi
 }
 
 int people_del(Sns *universal, People **self){
+
 
 }
 
@@ -152,7 +157,9 @@ int people_extend_friends(People *self, Circle **extend_friends){
 // circle
 
 int circle_map_people(Circle *self, void *pipe, int (*callback)(const void *data, void *pipe)){
-
+    int flag = 1;
+    flag = set_map(self->_peoples, pipe, *callback);
+    return flag;
 }
 
 
@@ -161,4 +168,19 @@ int id_cmp(People *data1,People *data2){
         return 0;
     else
         return 1;
+}
+
+int get_id(People *data, int *id) {
+    *id = data->id;
+    return 0;
+}
+
+int get_name(People *data, char *name) {
+    strcpy(name, data->name);
+    return 0;
+}
+
+int delete(void *aim) {
+    free(aim);
+    return 0;
 }
