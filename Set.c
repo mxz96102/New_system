@@ -10,6 +10,7 @@ int set_init(Set **self){
     if(temp==NULL)
         return 1;
     *self=temp;
+    (*self)->size = 0;
     base_init(&(temp->_base), NULL);
     return 0;
 }
@@ -29,6 +30,7 @@ int set_search(Set *self, void *data, void **result_data, int *result_found, int
 int set_insert(Set **self, void *data, int (*compar)(const void *, const void *)){
     int flag;
     flag = base_insert(&(*self)->_base, data, compar);
+    (*self)->size++;
     return flag;
 }
 int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)){

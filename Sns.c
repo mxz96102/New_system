@@ -28,7 +28,7 @@ int sns_init(Sns **self){
 }
 
 int sns_del(Sns **self){
-
+    set_del(&(*self)->_peoples, delete);
 }
 
 int sns_search_people(Sns *self, int id, People **result_people){
