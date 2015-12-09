@@ -72,13 +72,16 @@ int people_init(Sns *universal, People **self, char name[100], int id, int id_gi
     new_man->id = id;
     return 0;
 }
+
 int people_del(Sns *universal, People **self){
 
 }
 
 int people_patch(People *self, char name[100], int id){
-
+    strcpy(self->name, name);
+    return 0;
 }
+
 int people_follow(People *self, People *target){
     int flag[2];
     flag[2] = set_insert(&(self->_followings), target, id_cmp);
@@ -131,11 +134,15 @@ int people_friends(People *self, Circle **friends){
 }
 
 int people_common_followings(People *self, People *target, Circle **common_followings){
-
+    int flag = 1;
+    flag = set_intersection(self->_followings, target->_followings, &((*common_followings)->_peoples), id_cmp);
+    return flag;
 }
 
 int people_common_followers(People *self, People *target, Circle **common_followers){
-
+    int flag = 1;
+    flag = set_intersection(self->_followers, target->_followers, &((*common_followers)->_peoples), id_cmp);
+    return flag;
 }
 
 int people_extend_friends(People *self, Circle **extend_friends){
@@ -154,5 +161,4 @@ int id_cmp(People *data1,People *data2){
         return 0;
     else
         return 1;
-
 }

@@ -37,23 +37,42 @@ int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)
 
 int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*compar)(const void *, const void *)){
     Set *temp;
+    void *data;
+    data = NULL;
     temp=(Set *)malloc(sizeof(Set));
     if(temp==NULL)
         return 1;
+    base_init(&temp->_base, data);
 
 
 }
 
 int set_union(Set *set_a, Set *set_b, Set **result_union, int (*compar)(const void *, const void *)){
+    Set *temp;
+    void *data;
+    temp = (Set *) malloc(sizeof(Set));
+    if (temp == NULL)
+        return 1;
+    base_init(&temp->_base, data);
 
 }
 
 int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
-
+    Set *temp;
+    void *data;
+    temp = (Set *) malloc(sizeof(Set));
+    if (temp == NULL)
+        return 1;
+    base_init(&temp->_base, data);
 }
 
 int set_difference(Set *set_a, Set *set_b, Set **result_difference, int (*compar)(const void *, const void *)){
-
+    Set *temp;
+    void *data;
+    temp = (Set *) malloc(sizeof(Set));
+    if (temp == NULL)
+        return 1;
+    base_init(&temp->_base, data);
 }
 
 int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
