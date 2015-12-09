@@ -15,7 +15,9 @@ int set_init(Set **self){
 }
 
 int set_del(Set **self, int (*data_del)(void *data)){
-
+    int flag;
+    flag = base_del(&(*self)->_base, data_del);
+    return flag;
 }
 
 int set_search(Set *self, void *data, void **result_data, int *result_found, int (*compar)(const void *, const void *)){
