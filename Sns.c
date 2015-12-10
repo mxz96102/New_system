@@ -6,6 +6,8 @@
 
 int id_cmp(People *data1,People *data2);
 
+int delete(void *aim);
+
 // sns
 int sns_json_file_read(Sns **self, char *filename){
 
