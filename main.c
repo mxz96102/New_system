@@ -190,20 +190,20 @@ int User_information() {
         people_followings(aim, &cir);
         strcpy(temp, " ");
         flag = circle_map_people(cir, temp, callback);
-        if (flag)
+        if (!flag)
             printf("followings:%s \n", temp);
 
         people_followers(aim, &cir);
         strcpy(temp, " ");
         circle_map_people(cir, temp, callback);
-        if (flag)
-        printf("followers:%s\n", temp);
+        if (!flag)
+            printf("followers:%s\n", temp);
 
         people_friends(aim, &cir);
         strcpy(temp, " ");
         circle_map_people(cir, temp, callback);
-        if (flag)
-        printf("friends:%s\n", temp);
+        if (!flag)
+            printf("friends:%s\n", temp);
     }
     return 0;
 }

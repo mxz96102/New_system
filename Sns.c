@@ -36,12 +36,11 @@ int sns_del(Sns **self){
 
 int sns_search_people(Sns *self, int id, People **result_people){
     People *data, *result;
-    int respond;
+    int respond, flag;
     people_init(self, &data, "NULL", id, id);
-    set_search(self->_peoples, data, (void **) &result, &respond, (int (*)(const void *, const void *)) id_cmp);
+    flag = set_search(self->_peoples, data, (void **) &result, &respond, (int (*)(const void *, const void *)) id_cmp);
     *result_people = result;
-    return 0;
-
+    return flag;
 }
 int sns_insert_people(Sns *self, People *people, int id_given){
     int flag;
@@ -129,22 +128,26 @@ int people_unfriend(People *self, People *target){
 }
 
 int people_followings(People *self, Circle **followings){
+    *(followings) = (Circle *) malloc(sizeof(Circle));
     (*followings)->_peoples = self->_followings;
     return 0;
 }
 
 int people_followers(People *self, Circle **followers){
+    (*followers) = (Circle *) malloc(sizeof(Circle));
     (*followers)->_peoples = self->_followers;
     return 0;
 }
 
 int people_friends(People *self, Circle **friends){
+    (*friends) = (Circle *) malloc(sizeof(Circle));
     (*friends)->_peoples = self->_followings;
     return 0;
 }
 
 int people_common_followings(People *self, People *target, Circle **common_followings){
     int flag;
+    *common_followings = (Circle *) malloc(sizeof(Circle));
     flag = set_intersection(self->_followings, target->_followings, &((*common_followings)->_peoples),
                             (int (*)(const void *, const void *)) id_cmp);
     return flag;
@@ -152,12 +155,14 @@ int people_common_followings(People *self, People *target, Circle **common_follo
 
 int people_common_followers(People *self, People *target, Circle **common_followers){
     int flag;
+    *common_followers = (Circle *) malloc(sizeof(Circle));
     flag = set_intersection(self->_followers, target->_followers, &((*common_followers)->_peoples),
                             (int (*)(const void *, const void *)) id_cmp);
     return flag;
 }
 
 int people_extend_friends(People *self, Circle **extend_friends){
+    *extend_friends = (Circle *) malloc(sizeof(Circle));
     return 0;
 }
 
