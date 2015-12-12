@@ -36,6 +36,7 @@ int set_insert(Set **self, void *data, int (*compar)(const void *, const void *)
 int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)){
     int result;
     base_delete(&(*self)->_base, data, &result, compar);
+    (*self)->size--;
     return result;
 }
 

@@ -1,20 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "sns_functions.h"
 #include "set_functions.h"
+#include "cJSON.h"
 
 int id_cmp(People *data1,People *data2);
 
 int delete(void *aim);
 
+int id_all_get(People *data, int **p);
+
+int count(void *data, int *p);
+
 // sns
 int sns_json_file_read(Sns **self, char *filename){
+    FILE *fp;
+    int i = 0, id, childid;
+    int sum, j, k;
+    char *str, *s;
+    cJSON *root, *layer1, *layer2;
+    People *temp_man, *aim1, *aim2;
 
+    sns_init(self);
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("file error");
+        return 1;
+    }
+    fseek(fp, 0, SEEK_END);
+    unsigned len = ftell(fp);
+    s = (char *) malloc(len + 1);
+    rewind(fp);
+    fread(s, 1, len, fp);
+    s[len] = 0;
+    root = cJSON_Parse(s);
+    if (!root)
+        printf("parse error");
+    sum = cJSON_GetArraySize(root);
+    while (i < sum && sum != 0) {
+        layer1 = cJSON_GetArrayItem(root, i);
+        layer2 = cJSON_GetObjectItem(layer1, "name");
+        str = layer2->valuestring;
+        layer2 = cJSON_GetObjectItem(layer1, "id");
+        id = layer2->valueint;
+        people_init(*self, &temp_man, str, id, id);
+        sns_insert_people(*self, temp_man, id);
+        i++;
+    }
+    k = 0;
+    sum = cJSON_GetArraySize(root);
+    while (k < sum) {
+        i = 0;
+        layer1 = cJSON_GetArrayItem(root, i);
+        layer2 = cJSON_GetObjectItem(layer1, "followings");
+        j = cJSON_GetArraySize(layer2);
+        id = cJSON_GetObjectItem(layer1, "id")->valueint;
+        while (i < j) {
+            childid = (cJSON_GetArrayItem(layer2, i)->valueint);
+            sns_search_people(*self, id, &aim1);
+            sns_search_people(*self, childid, &aim2);
+            people_follow(aim1, aim2);
+            i++;
+        }
+        layer2 = cJSON_GetObjectItem(layer1, "friends");
+        j = cJSON_GetArraySize(layer2);
+        i = 0;
+        while (i < j) {
+            childid = cJSON_GetArrayItem(layer2, i)->valueint;
+            sns_search_people(*self, id, &aim1);
+            sns_search_people(*self, childid, &aim2);
+            people_friend(aim1, aim2);
+            i++;
+        }
+        k++;
+    }
+    fclose(fp);
+    cJSON_Delete(root);
+    return 0;
 }
+
 int sns_json_file_write(Sns *self, char *filename){
+    FILE *fp;
+    cJSON *root, *layer1, *layer2;
+    char *str;
+    int id = 1, f[255] = {0}, num = 0, flag, *p;
+    People *temp_man, *aim1, *aim2;
+    Circle *cir;
 
-
+    fp = fopen(filename, "w");
+    root = cJSON_CreateArray();
+    while (id <= self->peoples_id_max) {
+        flag = sns_search_people(self, id, &temp_man);
+        layer1 = cJSON_CreateObject();
+        cJSON_AddItemToArray(root, layer1);\
+        cJSON_AddNumberToObject(layer1, "id", temp_man->id);
+        cJSON_AddStringToObject(layer1, "name", temp_man->name);
+        people_followings(temp_man, &cir);
+        p = f;
+        num = 0;
+        circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
+        circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
+        layer2 = cJSON_CreateIntArray(f, num);
+        cJSON_AddItemToObject(layer1, "followings", layer2);
+        people_friends(temp_man, &cir);
+        p = f;
+        num = 0;
+        circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
+        circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
+        layer2 = cJSON_CreateIntArray(f, num);
+        cJSON_AddItemToObject(layer1, "friends", layer2);
+        id++;
+    }
+    str = cJSON_Print(root);
+    printf("%s", str);
+    fputs(str, fp);
+    fclose(fp);
+    cJSON_Delete(root);
+    return 0;
 }
 
 int sns_init(Sns **self){
@@ -24,8 +128,10 @@ int sns_init(Sns **self){
     if (temp == NULL)
         return 1;
     set_init(&people);
+    temp->peoples_id_max = 0;
     temp->_peoples = people;
     *self = temp;
+
     return 0;
 }
 
@@ -47,6 +153,7 @@ int sns_insert_people(Sns *self, People *people, int id_given){
     if (id_given <= self->peoples_id_max)
         return 2;
     flag = set_insert(&(self->_peoples), people, (int (*)(const void *, const void *)) id_cmp);
+    self->peoples_id_max++;
     if (flag)
         return 1;
     else
@@ -181,4 +288,18 @@ int id_cmp(People *data1,People *data2){
     else
         return 1;
 }
+
+int id_all_get(People *data, int **p) {
+    **p = data->id;
+    (*p)++;
+    return 0;
+}
+
+int count(void *data, int *p) {
+    (*p)++;
+    return 0;
+}
+
+
+
 

@@ -40,6 +40,8 @@ int User();
 
 int Sns_o();
 
+char *itoa(int num, char *str, int radix);
+
 int main(void) {
     int option = 1;
     sns_init(&global);
@@ -109,7 +111,7 @@ int File_Save() {
     char file_name[255];
     printf("\nFile name:  ");
     fflush(stdin);
-    fgets(file_name, 255, stdin);
+    fscanf(stdin, "%s", file_name);
     flag = sns_json_file_write(global, file_name);
     return flag;
 }
@@ -118,8 +120,7 @@ int File_Load() {
     int flag;
     char file_name[255];
     printf("\nFile name:  ");
-    fflush(stdin);
-    fgets(file_name, 255, stdin);
+    fscanf(stdin, "%s", file_name);
     flag = sns_json_file_read(&global, file_name);
     return flag;
 }
@@ -484,6 +485,41 @@ int delete(void *aim) {
 }
 
 int get_all_name(People *data, char *name) {
+    char temp[1000] = {""};
+    strcat(name, " ");
     strcat(name, data->name);
+    itoa(data->id, temp, 10);
+    strcat(name, "(");
+    strcat(name, temp);
+    strcat(name, ")");
     return 0;
+}
+
+char *itoa(int num, char *str, int radix) {/*索引表*/
+    char index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    unsigned unum;/*中间变量*/
+    int i = 0, j, k;
+/*确定unum的值*/
+    if (radix == 10 && num < 0)/*十进制负数*/
+    {
+        unum = (unsigned) -num;
+        str[i++] = '-';
+    }
+    else unum = (unsigned) num;/*其他情况*/
+/*转换*/
+    do {
+        str[i++] = index[unum % (unsigned) radix];
+        unum /= radix;
+    } while (unum);
+    str[i] = '\0';
+/*逆序*/
+    if (str[0] == '-')k = 1;/*十进制负数*/
+    else k = 0;
+    char temp;
+    for (j = k; j <= (i - 1) / 2; j++) {
+        temp = str[j];
+        str[j] = str[i - 1 + k - j];
+        str[i - 1 + k - j] = temp;
+    }
+    return str;
 }
