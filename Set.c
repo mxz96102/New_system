@@ -80,9 +80,15 @@ int set_difference(Set *set_a, Set *set_b, Set **result_difference, int (*compar
 }
 
 int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
-
+    Set *temp;
+    void *data;
+    temp = (Set *) malloc(sizeof(Set));
+    if (temp == NULL)
+        return 1;
+    base_init(&temp->_base, data);
 }
 
 int set_map(Set *self, void *pipe, int (*callback)(const void *data, void *pipe)){
     base_map(self->_base, pipe, *callback);
 }
+

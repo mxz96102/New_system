@@ -67,7 +67,6 @@ int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void 
     if(p1==self){
        free(p1);
         return 2;
-        deleted=0;
     }
     else if(p1!=NULL){
         while(p2->next!=p1){
@@ -75,10 +74,10 @@ int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void 
         }
         p2->next=p1->next;
         free(p1);
-        deleted=0;
-    } else deleted=1;
+        *deleted = 0;
+    } else *deleted = 1;
 
-    return 0;
+    return *deleted;
 }
 
 int base_map(Base *self, void *pipe, int (*callback)(const void *data, void *pipe)) {

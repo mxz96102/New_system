@@ -172,17 +172,3 @@ int id_cmp(People *data1,People *data2){
         return 1;
 }
 
-int get_id(People *data, int *id) {
-    *id = data->id;
-    return 0;
-}
-
-int get_name(People *data, char *name) {
-    strcpy(name, data->name);
-    return 0;
-}
-
-int delete(void *aim) {
-    free(aim);
-    return 0;
-}
