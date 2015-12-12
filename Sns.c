@@ -31,21 +31,23 @@ int sns_init(Sns **self){
 
 int sns_del(Sns **self){
     set_del(&(*self)->_peoples, delete);
+    return 0;
 }
 
 int sns_search_people(Sns *self, int id, People **result_people){
     People *data, *result;
     int respond;
-    people_init(self, &data, NULL, id, id);
-    set_search(self->_peoples, data, &result, &respond, id_cmp);
+    people_init(self, &data, "NULL", id, id);
+    set_search(self->_peoples, data, (void **) &result, &respond, (int (*)(const void *, const void *)) id_cmp);
+    *result_people = result;
     return 0;
 
 }
 int sns_insert_people(Sns *self, People *people, int id_given){
-    int8_t flag;
+    int flag;
     if (id_given <= self->peoples_id_max)
         return 2;
-    flag = set_insert(&(self->_peoples), people, id_cmp);
+    flag = set_insert(&(self->_peoples), people, (int (*)(const void *, const void *)) id_cmp);
     if (flag)
         return 1;
     else
@@ -53,7 +55,7 @@ int sns_insert_people(Sns *self, People *people, int id_given){
 }
 int sns_delete_people(Sns *self, People *people){
     int flag;
-    flag = set_delete(&self->_peoples, people, id_cmp);
+    flag = set_delete(&self->_peoples, people, (int (*)(const void *, const void *)) id_cmp);
     return flag;
 }
 
@@ -76,11 +78,12 @@ int people_init(Sns *universal, People **self, char name[100], int id, int id_gi
     set_init(&new_man->__incoming_friends);
     strcpy(new_man->name, name);
     new_man->id = id;
+    *self = new_man;
     return 0;
 }
 
 int people_del(Sns *universal, People **self){
-
+    return 0;
 
 }
 
@@ -91,8 +94,8 @@ int people_patch(People *self, char name[100], int id){
 
 int people_follow(People *self, People *target){
     int flag[2];
-    flag[2] = set_insert(&(self->_followings), target, id_cmp);
-    flag[1] = set_insert(&(target->_followers), self, id_cmp);
+    flag[2] = set_insert(&(self->_followings), target, (int (*)(const void *, const void *)) id_cmp);
+    flag[1] = set_insert(&(target->_followers), self, (int (*)(const void *, const void *)) id_cmp);
     if (flag[1] || flag[2])
         return 1;
     else
@@ -100,8 +103,8 @@ int people_follow(People *self, People *target){
 }
 int people_unfollow(People *self, People *target){
     int flag[2];
-    flag[2] = set_delete(&(self->_followings), target, id_cmp);
-    flag[1] = set_delete(&(target->_followers), self, id_cmp);
+    flag[2] = set_delete(&(self->_followings), target, (int (*)(const void *, const void *)) id_cmp);
+    flag[1] = set_delete(&(target->_followers), self, (int (*)(const void *, const void *)) id_cmp);
     if (flag[1] || flag[2])
         return 1;
     else
@@ -109,7 +112,7 @@ int people_unfollow(People *self, People *target){
 }
 int people_friend(People *self, People *target){
     int flag;
-    flag = set_insert(&(self->_friends), target, id_cmp);
+    flag = set_insert(&(self->_friends), target, (int (*)(const void *, const void *)) id_cmp);
     if (flag)
         return 1;
     else
@@ -118,7 +121,7 @@ int people_friend(People *self, People *target){
 }
 int people_unfriend(People *self, People *target){
     int flag;
-    flag = set_delete(&(self->_friends), target, id_cmp);
+    flag = set_delete(&(self->_friends), target, (int (*)(const void *, const void *)) id_cmp);
     if (flag)
         return 1;
     else
@@ -141,19 +144,21 @@ int people_friends(People *self, Circle **friends){
 }
 
 int people_common_followings(People *self, People *target, Circle **common_followings){
-    int flag = 1;
-    flag = set_intersection(self->_followings, target->_followings, &((*common_followings)->_peoples), id_cmp);
+    int flag;
+    flag = set_intersection(self->_followings, target->_followings, &((*common_followings)->_peoples),
+                            (int (*)(const void *, const void *)) id_cmp);
     return flag;
 }
 
 int people_common_followers(People *self, People *target, Circle **common_followers){
-    int flag = 1;
-    flag = set_intersection(self->_followers, target->_followers, &((*common_followers)->_peoples), id_cmp);
+    int flag;
+    flag = set_intersection(self->_followers, target->_followers, &((*common_followers)->_peoples),
+                            (int (*)(const void *, const void *)) id_cmp);
     return flag;
 }
 
 int people_extend_friends(People *self, Circle **extend_friends){
-
+    return 0;
 }
 
 // circle

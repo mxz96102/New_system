@@ -4,20 +4,57 @@
 #include "sns_functions.h"
 
 Sns *global;
-int all_id;
+int all_id = 1;
 
 int get_all_name(People *data, char *name);
 
+int add_following();
+
+int del_friend();
+
+int del_following();
+
+int common_followings();
+
+int common_followers();
+
+int extend_friends();
+
+int add_friend();
+
+int User_create();
+
+int User_delete();
+
+int User_information();
+
+int File_Load();
+
+int File_Save();
+
+int menu();
+
+int File();
+
+int User();
+
+int Sns_o();
+
 int main(void) {
     int option = 1;
+    sns_init(&global);
     while (option != 9) {
         option = menu();
         switch (option) {
             case 1:
                 option = File();
+                break;
             case 2:
                 option = User();
+                break;
             case 3:
+                option = Sns_o();
+                break;
             case 4:
             default:
                 break;
@@ -34,6 +71,7 @@ int menu() {
     printf("#3.Sns operation\n");
     printf("################\n");
     printf("\nwhat do you want to do: ");
+    fflush(stdin);
     fscanf(stdin, "%1d", &option);
     return option;
 }
@@ -48,6 +86,7 @@ int File() {
     printf("################\n");
     printf("\nwhat do you want to do: ");
     while (option != 3 && flag != 0) {
+        fflush(stdin);
         fscanf(stdin, "%1d", &option);
         switch (option) {
             case 1:
@@ -66,18 +105,20 @@ int File() {
 }
 
 int File_Save() {
-    int flag = 1;
+    int flag;
     char file_name[255];
     printf("\nFile name:  ");
+    fflush(stdin);
     fgets(file_name, 255, stdin);
     flag = sns_json_file_write(global, file_name);
     return flag;
 }
 
 int File_Load() {
-    int flag = 1;
+    int flag;
     char file_name[255];
     printf("\nFile name:  ");
+    fflush(stdin);
     fgets(file_name, 255, stdin);
     flag = sns_json_file_read(&global, file_name);
     return flag;
@@ -94,6 +135,7 @@ int User() {
     printf("################\n");
     printf("\nwhat do you want to do: ");
     while (option != 4 && flag != 0) {
+        fflush(stdin);
         fscanf(stdin, "%1d", &option);
         switch (option) {
             case 1:
@@ -115,19 +157,21 @@ int User() {
 }
 
 int User_create() {
-    int flag = 1;
+    int flag;
     People *user;
     char user_name[100];
     printf("please write your name: ");
     fflush(stdin);
-    fgets(user_name, 255, stdin);
-    people_init(global, &user, user_name, all_id, all_id);
-    return 0;
+    fscanf(stdin, "%s", user_name);
+    flag = people_init(global, &user, user_name, all_id, all_id);
+    all_id++;
+    flag += sns_insert_people(global, user, user->id);
+    return flag;
 }
 
 int User_information() {
-    int flag = 1, id;
-    char temp[1000];
+    int flag, id;
+    char temp[1000] = {""};
     People *aim;
     Circle *cir;
     void *callback;
@@ -145,24 +189,27 @@ int User_information() {
 
         people_followings(aim, &cir);
         strcpy(temp, " ");
-        circle_map_people(cir, temp, callback);
-        printf("followings:%s\n", temp);
+        flag = circle_map_people(cir, temp, callback);
+        if (flag)
+            printf("followings:%s \n", temp);
 
         people_followers(aim, &cir);
         strcpy(temp, " ");
         circle_map_people(cir, temp, callback);
+        if (flag)
         printf("followers:%s\n", temp);
 
         people_friends(aim, &cir);
         strcpy(temp, " ");
         circle_map_people(cir, temp, callback);
+        if (flag)
         printf("friends:%s\n", temp);
     }
     return 0;
 }
 
 int User_delete() {
-    int flag = 1, id;
+    int flag, id;
     People *aim;
     printf("please tell me the id you want to delete: ");
     fflush(stdin);
@@ -187,7 +234,7 @@ int Sns_o() {
     printf("#4.User1 delete user2 as following.\n");
     printf("#5.Find common followings of user1 and user2.\n");
     printf("#6.Find common followers of user1 and user2.\n");
-    printf("#7.Find incoming friends of user1\n");
+    printf("#7.Find extend friends of user1\n");
     printf("#8.Back to main\n");
     printf("################\n");
     printf("\nwhat do you want to do: ");
@@ -213,7 +260,7 @@ int Sns_o() {
                 flag = common_followers();
                 break;
             case 7:
-                flag = incoming_friends();
+                flag = extend_friends();
                 break;
             case 8:
                 break;
@@ -225,7 +272,7 @@ int Sns_o() {
 }
 
 int add_friend() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
     printf("please tell me the user1 id: ");
     fflush(stdin);
@@ -253,7 +300,7 @@ int add_friend() {
 }
 
 int add_following() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
     printf("please tell me the user1 id: ");
     fflush(stdin);
@@ -282,7 +329,7 @@ int add_following() {
 }
 
 int del_friend() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
     printf("please tell me the user1 id: ");
     fflush(stdin);
@@ -311,9 +358,8 @@ int del_friend() {
 }
 
 int del_following() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
-    char temp[1000];
     printf("please tell me the user1 id: ");
     fflush(stdin);
     fscanf(stdin, "%d", &id1);
@@ -341,7 +387,7 @@ int del_following() {
 }
 
 int common_followers() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
     Circle *result;
     void *callback;
@@ -376,7 +422,7 @@ int common_followers() {
 }
 
 int common_followings() {
-    int flag = 1, id1, id2;
+    int flag, id1, id2;
     People *aim1, *aim2;
     Circle *result;
     void *callback;
@@ -409,27 +455,31 @@ int common_followings() {
     return 0;
 }
 
-int incoming_friends() {
-
-}
-
-int get_id(People *data, int *id) {
-    *id = data->id;
-    return 0;
-}
-
-int get_name(People *data, char *name) {
-    strcpy(name, data->name);
-    return 0;
+int extend_friends() {
+    int flag, id;
+    People *aim;
+    Circle *result;
+    void *callback;
+    char temp[1000];
+    printf("please tell me the id you want : ");
+    fflush(stdin);
+    fscanf(stdin, "%d", &id);
+    flag = sns_search_people(global, id, &aim);
+    if (flag) {
+        printf("404 NOT FOUND\n");
+        return 1;
+    } else {
+        flag = people_extend_friends(aim, &result);
+        callback = get_all_name;
+        strcpy(temp, " ");
+        circle_map_people(result, temp, callback);
+        printf("followings:%s\n", temp);
+    }
+    return flag;
 }
 
 int delete(void *aim) {
     free(aim);
-    return 0;
-}
-
-int get_all_id(People *data, int *id) {
-    *id = data->id;
     return 0;
 }
 

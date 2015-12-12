@@ -25,18 +25,20 @@ int base_del(Base **self, int (*data_del)(void *data)) {
 
 int base_search(Base *self, void *data, void **result_data, int *result_found, int (*compar)(const void *, const void *)) {
     int flag=1;
+    self = self->next;
     while(self!=NULL){
         flag=(*compar)(self->data,data);
         if(flag==0) {
-            result_found=0;
-            result_data=self->data;
+            *result_found = 0;
+            *result_data = self->data;
             return 0;
         }
+        self = self->next;
     }
 
-    result_found=1;
+    *result_found = 1;
 
-    return 0;
+    return 1;
 }
 
 int base_insert(Base **self, void *data, int (*compar)(const void *, const void *)) {
@@ -44,9 +46,8 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
     temp=(Base *)malloc(sizeof(Base));
     if(temp==NULL)
         return 1;
-
     p1=*self;
-
+    temp->data = data;
     while(p1->next!=NULL) {
         p1 = p1->next;
         if ((*compar)(p1->data, data) == 0)
@@ -60,11 +61,12 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
 int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void *, const void *)) {
     Base *p1,*p2;
     p1=*self;
+    p2 = *self;
     while ((*compar)(p1->data, data) != 0 && p1 != NULL) {
         p1=p1->next;
     }
 
-    if(p1==self){
+    if (p1 == *self) {
        free(p1);
         return 2;
     }
