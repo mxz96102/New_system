@@ -90,6 +90,8 @@ int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void 
 }
 
 int set_map(Set *self, void *pipe, int (*callback)(const void *data, void *pipe)){
-    base_map(self->_base, pipe, *callback);
+    int flag;
+    flag = base_map(self->_base, pipe, *callback);
+    return flag;
 }
 

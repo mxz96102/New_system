@@ -190,7 +190,6 @@ int people_init(Sns *universal, People **self, char name[100], int id, int id_gi
 
 int people_del(Sns *universal, People **self){
     return 0;
-
 }
 
 int people_patch(People *self, char name[100], int id){
