@@ -168,7 +168,8 @@ int sns_insert_people(Sns *self, People *people, int id_given){
 }
 int sns_delete_people(Sns *self, People *people){
     int flag;
-    flag = set_delete(&self->_peoples, people, (int (*)(const void *, const void *)) id_cmp);
+    flag = people_del(self, &people);
+    flag += set_delete(&self->_peoples, people, (int (*)(const void *, const void *)) id_cmp);
     return flag;
 }
 
@@ -180,7 +181,6 @@ int sns_map_people(Sns *self, void *pipe, int (*callback)(const void *data, void
 
 // people
 int people_init(Sns *universal, People **self, char name[100], int id, int id_given){
-    Set *temp;
     People *new_man;
     new_man = (People *) malloc(sizeof(People));
     if (new_man == NULL)
@@ -196,6 +196,10 @@ int people_init(Sns *universal, People **self, char name[100], int id, int id_gi
 }
 
 int people_del(Sns *universal, People **self){
+    set_del(&(*self)->__incoming_friends, delete);
+    set_del(&(*self)->_friends, delete);
+    set_del(&(*self)->_followers, delete);
+    set_del(&(*self)->_followings, delete);
     return 0;
 }
 

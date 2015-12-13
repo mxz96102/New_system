@@ -6,7 +6,7 @@ int all_id = 1;
 int main(void) {
     int option = 1;
     sns_init(&global);
-    while (option != 9) {
+    while (option != 4) {
         option = menu();
         switch (option) {
             case 1:
@@ -23,6 +23,7 @@ int main(void) {
                 break;
         }
     }
+    sns_del(&global);
 }
 
 int menu() {
@@ -32,6 +33,7 @@ int menu() {
     printf("#1.File operation\n");
     printf("#2.User operation\n");
     printf("#3.Sns operation\n");
+    printf("#4.Exit\n");
     printf("################\n");
     printf("\nwhat do you want to do: ");
     fflush(stdin);
@@ -93,10 +95,11 @@ int User() {
     printf("#1.User create\n");
     printf("#2.User information\n");
     printf("#3.User delete\n");
-    printf("#4.Back to menu\n");
+    printf("#4.User information\n");
+    printf("#5.Back to menu\n");
     printf("################\n");
-    printf("\nwhat do you want to do: ");
-    while (option != 4 && flag != 0) {
+    while (option != 5 && flag != 0) {
+        printf("\nwhat do you want to do: ");
         fflush(stdin);
         fscanf(stdin, "%1d", &option);
         switch (option) {
@@ -110,6 +113,7 @@ int User() {
                 flag = User_delete();
                 break;
             case 4:
+                flag = User_patch();
                 break;
             default:
                 break;
@@ -182,6 +186,26 @@ int User_delete() {
         return 1;
     } else {
         flag = sns_delete_people(global, aim);
+    }
+    return flag;
+}
+
+int User_patch() {
+    int flag, id;
+    People *aim;
+    char temp[100];
+    printf("please tell me the id you want to change name: ");
+    fflush(stdin);
+    fscanf(stdin, "%d", &id);
+    flag = sns_search_people(global, id, &aim);
+    if (flag) {
+        printf("404 NOT FOUND\n");
+        return 1;
+    } else {
+        printf("please write new name:");
+        fflush(stdin);
+        fscanf(stdin, "%s", temp);
+        flag = people_patch(aim, temp, id);
     }
     return flag;
 }

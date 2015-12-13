@@ -25,6 +25,8 @@ int User_delete();
 
 int User_information();
 
+int User_patch();
+
 int File_Load();
 
 int File_Save();

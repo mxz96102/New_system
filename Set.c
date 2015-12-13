@@ -4,8 +4,6 @@
 #include "base_functions.h"
 
 
-int set_inc(void *data, Set *p);
-
 int set_compar(void *data1, void *data2);
 
 int set_1(void *data1, void *data2);
@@ -30,7 +28,7 @@ int set_init(Set **self){
 int set_del(Set **self, int (*data_del)(void *data)){
     int flag;
     flag = base_del(&(*self)->_base, data_del);
-    data_del(*self);
+    data_del(self);
     return flag;
 }
 
@@ -55,9 +53,7 @@ int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)
 
 int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*compar)(const void *, const void *)){
     Set *temp_a, *temp_b, *temp_c;
-    void *data;
     int flag;
-    data = NULL;
     flag = set_init(&temp_a);
     flag += set_init(&temp_b);
     flag += set_init(&temp_c);
@@ -72,23 +68,10 @@ int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*co
     return flag;
 }
 
-int set_inc(void *data, Set *p) {
-    int flag;
-    flag = base_map(p->_base, data, (int (*)(const void *, void *)) set_compar);
-    if (flag == 0) {
-        set_delete(&p, data, (int (*)(const void *, const void *)) set_compar);
-    }
-    return 0;
-}
-
 int set_union(Set *set_a, Set *set_b, Set **result_union, int (*compar)(const void *, const void *)){
     Set *temp;
     int flag;
-    void *data;
-    temp = (Set *) malloc(sizeof(Set));
-    if (temp == NULL)
-        return 1;
-    base_init(&temp->_base, data);
+    set_init(&temp);
     flag = base_map(set_a->_base, &temp, (int (*)(const void *, void *)) set_copy);
     flag += set_map(set_b, temp, (int (*)(const void *, void *)) set_uni);
     *result_union = temp;
@@ -108,11 +91,7 @@ int set_uni(void *data, Set *p) {
 int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
     Set *temp;
     int flag;
-    void *data;
-    temp = (Set *) malloc(sizeof(Set));
-    if (temp == NULL)
-        return 1;
-    base_init(&temp->_base, data);
+    set_init(&temp);
     flag = set_map(set_a, set_b, (int (*)(const void *, void *)) set_uni);
     return flag;
 }
@@ -120,11 +99,6 @@ int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)
 int set_difference(Set *set_a, Set *set_b, Set **result_difference, int (*compar)(const void *, const void *)){
     int flag;
     Set *temp;
-    void *data;
-    temp = (Set *) malloc(sizeof(Set));
-    if (temp == NULL)
-        return 1;
-    base_init(&temp->_base, data);
     flag = set_init(&temp);
     flag += base_map(set_a->_base, temp, (int (*)(const void *, void *)) set_copy);
     flag += set_map(set_b, temp, (int (*)(const void *, void *)) set_dif);
@@ -145,11 +119,7 @@ int set_dif(void *data, Set *p) {
 int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
     Set *temp;
     int flag;
-    void *data;
-    temp = (Set *) malloc(sizeof(Set));
-    if (temp == NULL)
-        return 1;
-    base_init(&temp->_base, data);
+    set_init(&temp);
     flag = set_map(set_a, set_b, (int (*)(const void *, void *)) set_dif);
     return flag;
 }
