@@ -54,14 +54,21 @@ int set_delete(Set **self, void *data, int (*compar)(const void *, const void *)
 }
 
 int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*compar)(const void *, const void *)){
-    Set *temp;
+    Set *temp_a, *temp_b, *temp_c;
     void *data;
     int flag;
     data = NULL;
-    flag = set_init(&temp);
-    flag += base_map(set_a->_base, temp, (int (*)(const void *, void *)) set_copy);
-    flag += set_map(set_b, temp, (int (*)(const void *, void *)) set_inc);
-    *result_intersection = temp;
+    flag = set_init(&temp_a);
+    flag += set_init(&temp_b);
+    flag += set_init(&temp_c);
+    flag += base_map(set_a->_base, temp_a, (int (*)(const void *, void *)) set_copy);
+    flag += base_map(set_b->_base, temp_b, (int (*)(const void *, void *)) set_copy);
+    flag += base_map(set_b->_base, temp_a, (int (*)(const void *, void *)) set_dif);
+    flag += base_map(set_a->_base, temp_b, (int (*)(const void *, void *)) set_dif);
+    flag += base_map(temp_a->_base, temp_b, (int (*)(const void *, void *)) set_uni);
+    flag += base_map(set_a->_base, temp_c, (int (*)(const void *, void *)) set_copy);
+    flag += base_map(temp_b->_base, temp_c, (int (*)(const void *, void *)) set_dif);
+    *result_intersection = temp_c;
     return flag;
 }
 
