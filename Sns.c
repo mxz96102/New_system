@@ -199,9 +199,9 @@ int people_patch(People *self, char name[100], int id){
 
 int people_follow(People *self, People *target){
     int flag[2];
-    flag[2] = set_insert(&(self->_followings), target, (int (*)(const void *, const void *)) id_cmp);
-    flag[1] = set_insert(&(target->_followers), self, (int (*)(const void *, const void *)) id_cmp);
-    if (flag[1] || flag[2])
+    flag[1] = set_insert(&(self->_followings), target, (int (*)(const void *, const void *)) id_cmp);
+    flag[0] = set_insert(&(target->_followers), self, (int (*)(const void *, const void *)) id_cmp);
+    if (flag[0] || flag[1])
         return 1;
     else
         return 0;
@@ -216,13 +216,13 @@ int people_unfollow(People *self, People *target){
         return 0;
 }
 int people_friend(People *self, People *target){
-    int flag;
-    flag = set_insert(&(self->_friends), target, (int (*)(const void *, const void *)) id_cmp);
-    if (flag)
+    int flag[2];
+    flag[1] = set_insert(&(self->_friends), target, (int (*)(const void *, const void *)) id_cmp);
+    flag[0] = set_insert(&(target->__incoming_friends), self, (int (*)(const void *, const void *)) id_cmp);
+    if (flag[1] || flag[0])
         return 1;
     else
         return 0;
-
 }
 int people_unfriend(People *self, People *target){
     int flag;
@@ -234,7 +234,7 @@ int people_unfriend(People *self, People *target){
 }
 
 int people_followings(People *self, Circle **followings){
-    *(followings) = (Circle *) malloc(sizeof(Circle));
+    (*followings) = (Circle *) malloc(sizeof(Circle));
     (*followings)->_peoples = self->_followings;
     return 0;
 }
@@ -247,7 +247,7 @@ int people_followers(People *self, Circle **followers){
 
 int people_friends(People *self, Circle **friends){
     (*friends) = (Circle *) malloc(sizeof(Circle));
-    (*friends)->_peoples = self->_followings;
+    (*friends)->_peoples = self->_friends;
     return 0;
 }
 

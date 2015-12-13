@@ -291,7 +291,6 @@ int add_friend() {
         printf("404 NOT FOUND\n");
         return 1;
     }
-
     flag = people_friend(aim1, aim2);
     if (flag) {
         printf("Illeagal add!\n");
@@ -319,7 +318,6 @@ int add_following() {
         printf("404 NOT FOUND\n");
         return 1;
     }
-
     flag = people_follow(aim1, aim2);
     if (flag) {
         printf("Illeagal add!\n");
