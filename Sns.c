@@ -93,24 +93,27 @@ int sns_json_file_write(Sns *self, char *filename){
     root = cJSON_CreateArray();
     while (id <= self->peoples_id_max) {
         flag = sns_search_people(self, id, &temp_man);
-        layer1 = cJSON_CreateObject();
-        cJSON_AddItemToArray(root, layer1);\
-        cJSON_AddNumberToObject(layer1, "id", temp_man->id);
-        cJSON_AddStringToObject(layer1, "name", temp_man->name);
-        people_followings(temp_man, &cir);
-        p = f;
-        num = 0;
-        circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
-        circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
-        layer2 = cJSON_CreateIntArray(f, num);
-        cJSON_AddItemToObject(layer1, "followings", layer2);
-        people_friends(temp_man, &cir);
-        p = f;
-        num = 0;
-        circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
-        circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
-        layer2 = cJSON_CreateIntArray(f, num);
-        cJSON_AddItemToObject(layer1, "friends", layer2);
+        if (flag == 1);
+        else {
+            layer1 = cJSON_CreateObject();
+            cJSON_AddItemToArray(root, layer1);\
+            cJSON_AddNumberToObject(layer1, "id", temp_man->id);
+            cJSON_AddStringToObject(layer1, "name", temp_man->name);
+            people_followings(temp_man, &cir);
+            p = f;
+            num = 0;
+            circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
+            circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
+            layer2 = cJSON_CreateIntArray(f, num);
+            cJSON_AddItemToObject(layer1, "followings", layer2);
+            people_friends(temp_man, &cir);
+            p = f;
+            num = 0;
+            circle_map_people(cir, &p, (int (*)(const void *, void *)) id_all_get);
+            circle_map_people(cir, &num, (int (*)(const void *, void *)) count);
+            layer2 = cJSON_CreateIntArray(f, num);
+            cJSON_AddItemToObject(layer1, "friends", layer2);
+        }
         id++;
     }
     str = cJSON_Print(root);

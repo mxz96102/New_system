@@ -484,6 +484,8 @@ int delete(void *aim) {
 
 int get_all_name(People *data, char *name) {
     char temp[1000] = {""};
+    if (data == NULL)
+        return 0;
     strcat(name, " ");
     strcat(name, data->name);
     itoa(data->id, temp, 10);

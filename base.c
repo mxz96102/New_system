@@ -44,8 +44,11 @@ int base_search(Base *self, void *data, void **result_data, int *result_found, i
 int base_insert(Base **self, void *data, int (*compar)(const void *, const void *)) {
     Base *temp,*p1,*p2;
     temp=(Base *)malloc(sizeof(Base));
+
     if(temp==NULL)
         return 1;
+
+    temp->next = NULL;
     p1=*self;
     temp->data = data;
     if (p1 == NULL)
@@ -62,15 +65,15 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
 
 int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void *, const void *)) {
     Base *p1,*p2;
-    p1=*self;
+    p1 = (*self)->next;
     p2 = *self;
-    while ((*compar)(p1->data, data) != 0 && p1 != NULL) {
+    while (p1 != NULL && (*compar)(p1->data, data) != 0) {
         p1=p1->next;
     }
 
-    if (p1 == *self) {
-       free(p1);
-        return 2;
+    if (p1 == (*self)->next) {
+        free(p1);
+        return 0;
     }
     else if(p1!=NULL){
         while(p2->next!=p1){
@@ -86,10 +89,15 @@ int base_delete(Base **self, void *data, int *deleted, int (*compar)(const void 
 
 int base_map(Base *self, void *pipe, int (*callback)(const void *data, void *pipe)) {
     Base *p1;
+    int flag;
     p1 = self->next;
     while (p1 != NULL) {
-        if ((*callback)(p1->data, pipe))
-            return 1;
+        if (p1->data == NULL);
+        else {
+            flag = (*callback)(p1->data, pipe);
+            if (flag)
+                return 1;
+        }
         p1 = p1->next;
     }
     return 0;
