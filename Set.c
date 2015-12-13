@@ -14,6 +14,8 @@ int set_uni(void *data, Set *p);
 
 int set_copy(void *data, Set *p);
 
+int set_dif(void *data, Set *p);
+
 int set_init(Set **self){
     Set *temp;
     temp=(Set *)malloc(sizeof(Set));
@@ -65,7 +67,7 @@ int set_intersection(Set *set_a, Set *set_b, Set **result_intersection, int (*co
 
 int set_inc(void *data, Set *p) {
     int flag;
-    flag = set_map(p, data, (int (*)(const void *, void *)) set_compar);
+    flag = base_map(p->_base, data, (int (*)(const void *, void *)) set_compar);
     if (flag == 0) {
         set_delete(&p, data, (int (*)(const void *, const void *)) set_compar);
     }
@@ -85,6 +87,16 @@ int set_union(Set *set_a, Set *set_b, Set **result_union, int (*compar)(const vo
     return flag;
 }
 
+
+int set_uni(void *data, Set *p) {
+    int flag;
+    flag = set_map(p, data, (int (*)(const void *, void *)) set_compar);
+    if (flag) {
+        set_insert(&p, data, (int (*)(const void *, const void *)) set_compar);
+    }
+    return 0;
+}
+
 int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
     Set *temp;
     void *data;
@@ -95,12 +107,28 @@ int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)
 }
 
 int set_difference(Set *set_a, Set *set_b, Set **result_difference, int (*compar)(const void *, const void *)){
+    int flag;
     Set *temp;
     void *data;
     temp = (Set *) malloc(sizeof(Set));
     if (temp == NULL)
         return 1;
     base_init(&temp->_base, data);
+    flag = set_init(&temp);
+    flag += base_map(set_a->_base, temp, (int (*)(const void *, void *)) set_copy);
+    flag += set_map(set_b, temp, (int (*)(const void *, void *)) set_dif);
+    *result_difference = temp;
+    return flag;
+}
+
+
+int set_dif(void *data, Set *p) {
+    int flag;
+    flag = base_map(p->_base, data, (int (*)(const void *, void *)) set_compar);
+    if (flag) {
+        set_delete(&p, data, (int (*)(const void *, const void *)) set_compar);
+    }
+    return 0;
 }
 
 int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
@@ -128,15 +156,6 @@ int set_compar(void *data1, void *data2) {
         return 1;
     else
         return 0;
-}
-
-int set_uni(void *data, Set *p) {
-    int flag;
-    flag = set_map(p, data, (int (*)(const void *, void *)) set_compar);
-    if (flag) {
-        set_insert(&p, data, (int (*)(const void *, const void *)) set_compar);
-    }
-    return 0;
 }
 
 int set_1(void *data1, void *data2) {

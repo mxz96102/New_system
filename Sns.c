@@ -271,8 +271,11 @@ int people_common_followers(People *self, People *target, Circle **common_follow
 }
 
 int people_extend_friends(People *self, Circle **extend_friends){
+    int flag;
     *extend_friends = (Circle *) malloc(sizeof(Circle));
-    return 0;
+    flag = set_union(self->__incoming_friends, self->__incoming_friends, &((*extend_friends)->_peoples),
+                     (int (*)(const void *, const void *)) id_cmp);
+    return flag;
 }
 
 // circle

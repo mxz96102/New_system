@@ -95,7 +95,7 @@ int base_map(Base *self, void *pipe, int (*callback)(const void *data, void *pip
         if (p1->data == NULL);
         else {
             flag = (*callback)(p1->data, pipe);
-            if (flag)
+            if (flag == 1)
                 return 1;
         }
         p1 = p1->next;
