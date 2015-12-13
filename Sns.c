@@ -53,7 +53,7 @@ int sns_json_file_read(Sns **self, char *filename){
     sum = cJSON_GetArraySize(root);
     while (k < sum) {
         i = 0;
-        layer1 = cJSON_GetArrayItem(root, i);
+        layer1 = cJSON_GetArrayItem(root, k);
         layer2 = cJSON_GetObjectItem(layer1, "followings");
         j = cJSON_GetArraySize(layer2);
         id = cJSON_GetObjectItem(layer1, "id")->valueint;

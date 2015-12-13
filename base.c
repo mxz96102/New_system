@@ -48,6 +48,8 @@ int base_insert(Base **self, void *data, int (*compar)(const void *, const void 
         return 1;
     p1=*self;
     temp->data = data;
+    if (p1 == NULL)
+        return 1;
     while(p1->next!=NULL) {
         p1 = p1->next;
         if ((*compar)(p1->data, data) == 0)
