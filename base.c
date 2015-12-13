@@ -24,7 +24,7 @@ int base_del(Base **self, int (*data_del)(void *data)) {
         p1 = p2->next;
         free(p2);
     }
-    return 0
+    return 0;
 }
 
 int base_search(Base *self, void *data, void **result_data, int *result_found, int (*compar)(const void *, const void *)) {
