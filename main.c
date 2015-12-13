@@ -1,46 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "sns_functions.h"
+#include "main_functions.h"
 
 Sns *global;
 int all_id = 1;
-
-int get_all_name(People *data, char *name);
-
-int add_following();
-
-int del_friend();
-
-int del_following();
-
-int common_followings();
-
-int common_followers();
-
-int extend_friends();
-
-int add_friend();
-
-int User_create();
-
-int User_delete();
-
-int User_information();
-
-int File_Load();
-
-int File_Save();
-
-int menu();
-
-int File();
-
-int User();
-
-int Sns_o();
-
-char *itoa(int num, char *str, int radix);
 
 int main(void) {
     int option = 1;
@@ -184,7 +145,7 @@ int User_information() {
         printf("404 NOT FOUND\n");
         return 1;
     } else {
-        callback = get_all_name;
+        callback = non;
         printf("Id:%d\n", aim->id);
         printf("Name:%s\n", aim->name);
 
@@ -412,10 +373,10 @@ int common_followers() {
         printf("Failed!\n");
         return 1;
     }
-    callback = get_all_name;
+    callback = non;
     strcpy(temp, " ");
     circle_map_people(result, temp, callback);
-    printf("followings:%s\n", temp);
+    printf("common followers:%s\n", temp);
     return 0;
 
 }
@@ -447,7 +408,7 @@ int common_followings() {
         printf("Failed!\n");
         return 1;
     }
-    callback = get_all_name;
+    callback = non;
     strcpy(temp, " ");
     circle_map_people(result, temp, callback);
     printf("common_followings:%s\n", temp);
@@ -469,10 +430,10 @@ int extend_friends() {
         return 1;
     } else {
         flag = people_extend_friends(aim, &result);
-        callback = get_all_name;
+        callback = non;
         strcpy(temp, " ");
         circle_map_people(result, temp, callback);
-        printf("followings:%s\n", temp);
+        printf("extend friends:%s\n", temp);
     }
     return flag;
 }
@@ -482,43 +443,6 @@ int delete(void *aim) {
     return 0;
 }
 
-int get_all_name(People *data, char *name) {
-    char temp[1000] = {""};
-    if (data == NULL)
-        return 0;
-    strcat(name, " ");
-    strcat(name, data->name);
-    itoa(data->id, temp, 10);
-    strcat(name, "(");
-    strcat(name, temp);
-    strcat(name, ")");
+int non(void *data1, void *data2) {
     return 0;
-}
-
-char *itoa(int num, char *str, int radix) {
-    char index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    unsigned unum;
-    int i = 0, j, k;
-
-    if (radix == 10 && num < 0)
-    {
-        unum = (unsigned) -num;
-        str[i++] = '-';
-    }
-    else unum = (unsigned) num;
-    do {
-        str[i++] = index[unum % (unsigned) radix];
-        unum /= radix;
-    } while (unum);
-    str[i] = '\0';
-
-    if (str[0] == '-')k = 1;
-    else k = 0;
-    char temp;
-    for (j = k; j <= (i - 1) / 2; j++) {
-        temp = str[j];
-        str[j] = str[i - 1 + k - j];
-        str[i - 1 + k - j] = temp;
-    }
-    return str;
 }

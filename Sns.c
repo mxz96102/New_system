@@ -14,6 +14,10 @@ int id_all_get(People *data, int **p);
 
 int count(void *data, int *p);
 
+int get_all_name(People *data, char *name);
+
+char *itoa(int num, char *str, int radix);
+
 // sns
 int sns_json_file_read(Sns **self, char *filename){
     FILE *fp;
@@ -282,7 +286,8 @@ int people_extend_friends(People *self, Circle **extend_friends){
 
 int circle_map_people(Circle *self, void *pipe, int (*callback)(const void *data, void *pipe)){
     int flag = 1;
-    flag = set_map(self->_peoples, pipe, *callback);
+    flag = set_map(self->_peoples, pipe, (int (*)(const void *, void *)) get_all_name);
+    flag += set_map(self->_peoples, pipe, (*callback));
     return flag;
 }
 
@@ -305,6 +310,44 @@ int count(void *data, int *p) {
     return 0;
 }
 
+int get_all_name(People *data, char *name) {
+    char temp[1000] = {""};
+    if (data == NULL)
+        return 0;
+    strcat(name, " ");
+    strcat(name, data->name);
+    itoa(data->id, temp, 10);
+    strcat(name, "(");
+    strcat(name, temp);
+    strcat(name, ")");
+    return 0;
+}
 
+char *itoa(int num, char *str, int radix) {
+    char index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    unsigned unum;
+    int i = 0, j, k;
+
+    if (radix == 10 && num < 0) {
+        unum = (unsigned) -num;
+        str[i++] = '-';
+    }
+    else unum = (unsigned) num;
+    do {
+        str[i++] = index[unum % (unsigned) radix];
+        unum /= radix;
+    } while (unum);
+    str[i] = '\0';
+
+    if (str[0] == '-')k = 1;
+    else k = 0;
+    char temp;
+    for (j = k; j <= (i - 1) / 2; j++) {
+        temp = str[j];
+        str[j] = str[i - 1 + k - j];
+        str[i - 1 + k - j] = temp;
+    }
+    return str;
+}
 
 

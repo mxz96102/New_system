@@ -84,6 +84,7 @@ int set_union(Set *set_a, Set *set_b, Set **result_union, int (*compar)(const vo
     base_init(&temp->_base, data);
     flag = base_map(set_a->_base, &temp, (int (*)(const void *, void *)) set_copy);
     flag += set_map(set_b, temp, (int (*)(const void *, void *)) set_uni);
+    *result_union = temp;
     return flag;
 }
 
@@ -99,11 +100,14 @@ int set_uni(void *data, Set *p) {
 
 int set_extend(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
     Set *temp;
+    int flag;
     void *data;
     temp = (Set *) malloc(sizeof(Set));
     if (temp == NULL)
         return 1;
     base_init(&temp->_base, data);
+    flag = set_map(set_a, set_b, (int (*)(const void *, void *)) set_uni);
+    return flag;
 }
 
 int set_difference(Set *set_a, Set *set_b, Set **result_difference, int (*compar)(const void *, const void *)){
@@ -133,11 +137,14 @@ int set_dif(void *data, Set *p) {
 
 int set_contract(Set *set_a, Set *set_b, int (*compar)(const void *, const void *)){
     Set *temp;
+    int flag;
     void *data;
     temp = (Set *) malloc(sizeof(Set));
     if (temp == NULL)
         return 1;
     base_init(&temp->_base, data);
+    flag = set_map(set_a, set_b, (int (*)(const void *, void *)) set_dif);
+    return flag;
 }
 
 int set_map(Set *self, void *pipe, int (*callback)(const void *data, void *pipe)){
